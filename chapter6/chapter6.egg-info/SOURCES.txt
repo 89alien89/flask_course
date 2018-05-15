@@ -1,0 +1,15 @@
+chapter6/__init__.py
+chapter6/app.py
+chapter6/create_database.py
+chapter6/security.py
+chapter6.egg-info/PKG-INFO
+chapter6.egg-info/SOURCES.txt
+chapter6.egg-info/dependency_links.txt
+chapter6.egg-info/top_level.txt
+chapter6/models/ItemModel.py
+chapter6/models/UserModel.py
+chapter6/models/__init__.py
+chapter6/resources/ItemListResource.py
+chapter6/resources/ItemResource.py
+chapter6/resources/UserResource.py
+chapter6/resources/__init__.py
