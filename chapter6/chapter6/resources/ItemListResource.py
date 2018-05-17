@@ -1,4 +1,4 @@
-from models.ItemModel import ItemModel
+from chapter6.models.ItemModel import ItemModel
 from flask_restful import Resource
 
 

@@ -1,7 +1,12 @@
-import sqlite3
+from chapter6.db import db
 
 
-class ItemModel(object):
+class ItemModel(db.Model):
+    __tablename__ = "items"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80))
+    price = db.Column(db.FLOAT(precision=2))
+
     def __init__(self, name, price):
         self.name = name
         self.price = price
@@ -9,51 +14,18 @@ class ItemModel(object):
     def json(self):
         return {"name": self.name, "price": self.price}
 
-    def insert(self):
-        conn = sqlite3.Connection('users.db')
-        cursor = conn.cursor()
-        query = "INSERT INTO items VALUES (null, ?, ?)"
-        cursor.execute(query, (self.name, self.price))
-        conn.commit()
-        conn.close()
-
-    def update(self):
-        conn = sqlite3.Connection('users.db')
-        cursor = conn.cursor()
-        query = "UPDATE items SET price = ? WHERE name = ?"
-        cursor.execute(query, (self.price, self.name))
-        conn.commit()
-        conn.close()
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
 
     def delete(self):
-        conn = sqlite3.Connection('users.db')
-        cursor = conn.cursor()
-        query = "DELETE FROM items WHERE name = ?"
-        cursor.execute(query, (self.name, ))
-        conn.commit()
-        conn.close()
+        db.session.delete(self)
+        db.session.commit()
 
     @classmethod
     def get_item_by_name(cls, name):
-        conn = sqlite3.Connection('users.db')
-        cursor = conn.cursor()
-        query = "SELECT * FROM items WHERE name = ?"
-        res = cursor.execute(query, (name, )).fetchone()
-
-        ret = None
-        if res:
-            ret = ItemModel(res[1], res[2])
-        return ret
+        return cls.query.filter_by(name=name).first()
 
     @classmethod
     def get_items(cls):
-        conn = sqlite3.Connection('users.db')
-        cursor = conn.cursor()
-        query = "SELECT * FROM items"
-        res = cursor.execute(query)
-
-        items = []
-        for row in res:
-            items.append(ItemModel(row[1], row[2]))
-        conn.close()
-        return items
+        return cls.query.all()

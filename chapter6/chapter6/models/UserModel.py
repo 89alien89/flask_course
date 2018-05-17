@@ -1,46 +1,31 @@
-import sqlite3
+from chapter6.db import db
 
 
-class UserModel(object):
-    def __init__(self, id, username, password):
-        self.id = id
+class UserModel(db.Model):
+    __tablename__ = "users"
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80))
+    password = db.Column(db.String(80))
+
+    def __init__(self, username, password):
         self.username = username
         self.password = password
 
     def json(self):
         return {'username': self.username, 'password': self.password}
 
-    def insert(self):
-        query = "INSERT INTO users VALUES (NULL, ?, ?)"
-        conn = sqlite3.connect('users.db')
-        cursor = conn.cursor()
-
-        cursor.execute(query, (self.username, self.password))
-
-        conn.commit()
-        conn.close()
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
 
     @classmethod
     def get_user_by_name(cls, name):
-        conn = sqlite3.Connection('users.db')
-        cursor = conn.cursor()
-        res = cursor.execute('select * from users where username = ?', (name,)).fetchone()
-        conn.close()
-        ret = None
-        if res:
-            ret = UserModel(*res)
-        return ret
+        return cls.query.filter_by(username=name).first()
 
     @classmethod
     def get_user_by_id(cls, id):
-        conn = sqlite3.Connection('users.db')
-        cursor = conn.cursor()
-        res = cursor.execute('select * from users where id = ?', (id,)).fetchone()
-        conn.close()
-        ret = None
-        if res:
-            ret = UserModel(*res)
-        return ret
+        return cls.query.filter_by(id=id).first()
+
 
 
 
