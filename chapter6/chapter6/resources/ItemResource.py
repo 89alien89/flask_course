@@ -6,6 +6,7 @@ from chapter6.models.ItemModel import ItemModel
 class ItemResource(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument(name='price', required=True, type=float)
+    parser.add_argument(name='store_id', required=True, type=int)
 
     @jwt_required()
     def get(self, name):
@@ -19,7 +20,7 @@ class ItemResource(Resource):
         item = ItemModel.get_item_by_name(name)
         if item:
             return "Item with that name already exists", 400
-        item = ItemModel(name, data['price'])
+        item = ItemModel(name, data['price'], data['store_id'])
         item.save_to_db()
         return item.json(), 201
 
@@ -27,7 +28,7 @@ class ItemResource(Resource):
         data = self.parser.parse_args()
         item = ItemModel.get_item_by_name(name)
         if not item:
-            item = ItemModel(name, data['price'])
+            item = ItemModel(name, data['price'], data['store_id'])
             item.save_to_db()
             return item.json(), 201
         else:
